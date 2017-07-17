@@ -168,7 +168,7 @@ class Client
      */
     protected function makeUri($objectType, $operation = null, array $attr = [])
     {
-        $uri = "/{$objectType}/version/4";
+        $uri = "/{$objectType}/version/3";
 
         if (!empty($operation)) {
             $uri .= "/do/{$operation}";
