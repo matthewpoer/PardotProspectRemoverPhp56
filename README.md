@@ -1,11 +1,57 @@
-# Pardot API Client
-A modern PHP API client for Pardot.com (api version 4).
+# Bastardized Script for PHP 5.6
+I took https://github.com/runmybusiness/pardot and made it less helpful and
+modern for the sake of PHP 5.6 compatibility.
 
-[![Build Status](https://travis-ci.org/runmybusiness/pardot.svg?branch=master)](https://travis-ci.org/runmybusiness/pardot)
-[![StyleCI](https://styleci.io/repos/81985082/shield?branch=master)](https://styleci.io/repos/81985082)
+My use case was simply that I needed to quickly remove 25k or so Prospects from
+my Pardot account, and I had quickest access to a PHP 5.6 binary on my
+workstation.
 
 --------
-## Install via Composer
+
+## Download and Setup
 ```bash
-  composer require runmybusiness/pardot
+git clone https://github.com/matthewpoer/PardotProspectRemoverPhp56.git .
+cd PardotProspectRemoverPhp56
+composer install
+```
+
+## Example Script
+```php
+<?php
+require_once('vendor/autoload.php');
+$client = new RunMyBusiness\Pardot\Client();
+$client->setAuth(
+  'myemailaddress@mydomain.com',
+  'mypassword',
+  'myuserkey'
+);
+$client->authenticate();
+
+// be sure the CSV file is just the Prospect ID column, no additional collumns,
+// and does not have a header (so actually not a CSV at all, but just a list of
+// Prospect IDs separated by \n)
+$filename = 'to_be_deleted.csv';
+$prospect_ids = file($filename);
+
+$count = 0;
+foreach($prospect_ids as $prospect_id) {
+  $prospect_id = trim($prospect_id);
+  echo 'The count is ' . $count . ' and the id is ' . $prospect_id . "\r";
+  $response = $client->delete('Prospect', $prospect_id);
+  if($response !== TRUE) {
+    echo 'The count is ' . $count . ' and the id is ' . $prospect_id . PHP_EOL;
+    echo 'Something amiss with ID of ' . $prospect_id . PHP_EOL;
+    echo 'Maybe there\'s an error message? ' . print_r($response, TRUE) . PHP_EOL;
+    die();
+  }
+
+  $count++;
+
+  if($count >= 1500) {
+    echo 'The count is ' . $count . ' and the id is ' . $prospect_id . PHP_EOL;
+    break;
+  }
+}
+
+echo 'Job complete' . PHP_EOL;
 ```
