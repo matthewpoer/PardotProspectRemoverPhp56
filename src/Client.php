@@ -3,7 +3,6 @@
 namespace RunMyBusiness\Pardot;
 
 use GuzzleHttp\Client as GuzzleClient;
-use Illuminate\Support\Collection;
 
 /**
  * Class Client.
@@ -62,7 +61,7 @@ class Client
      *
      * @return $this
      */
-    public function setAuth(string $email, string $password, string $userKey)
+    public function setAuth($email, $password, $userKey)
     {
         $this->email = $email;
         $this->password = $password;
@@ -97,79 +96,12 @@ class Client
      *
      * @return array
      */
-    public function read(string $objectType, int $id, array $options = [])
+    public function read($objectType, $id, array $options = [])
     {
         $options['id'] = $id;
-
-        return array_get($this->makeGetRequest(
-            $this->makeUri($objectType, 'read', $this->makeFields($options))
-        ), snake_case($objectType), []);
-    }
-
-    /**
-     * @param string $objectType
-     * @param array  $payload
-     * @param array  $options
-     *
-     * @return array
-     */
-    public function create(string $objectType, array $payload, array $options = [])
-    {
-        return array_get($this->makePostRequest(
-            $this->makeUri($objectType, 'create', $this->makeFields($options)),
-            $payload
-        ), snake_case($objectType), []);
-    }
-
-    /**
-     * @param string $objectType
-     * @param int    $id
-     * @param array  $payload
-     * @param array  $options
-     *
-     * @return array
-     */
-    public function update(string $objectType, int $id, array $payload, array $options = [])
-    {
-        $options['id'] = $id;
-
-        return array_get($this->makePostRequest(
-            $this->makeUri($objectType, 'update', $options),
-            $this->makeFields($payload)
-        ), snake_case($objectType), []);
-    }
-
-    /**
-     * @param string $objectType
-     * @param int    $id
-     * @param array  $payload
-     * @param array  $options
-     *
-     * @return array
-     */
-    public function upsert(string $objectType, int $id, array $payload, array $options = [])
-    {
-        $options['id'] = $id;
-
-        return array_get($this->makePostRequest(
-            $this->makeUri($objectType, 'upsert', $options),
-            $this->makeFields($payload)
-        ), snake_case($objectType), []);
-    }
-
-    /**
-     * @param string $objectType
-     * @param array  $options
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function query(string $objectType, array $options = [])
-    {
-        $results = array_get($this->makeGetRequest(
-            $this->makeUri($objectType, 'query', $this->makeFields($options))
-        ), 'result.'.snake_case($objectType), []);
-
-        return collect($results);
+        return $this->makeGetRequest(
+          $this->makeUri($objectType, 'read', $this->makeFields($options))
+        );
     }
 
     /**
@@ -179,7 +111,7 @@ class Client
      *
      * @return bool
      */
-    public function delete(string $objectType, int $id, array $options = [])
+    public function delete($objectType, $id, array $options = [])
     {
         $options['id'] = $id;
 
@@ -193,24 +125,9 @@ class Client
      *
      * @return array
      */
-    protected function makeGetRequest(string $url)
+    protected function makeGetRequest($url)
     {
         $result = $this->connection->get($url);
-
-        return (array) json_decode($result->getBody()->getContents(), true);
-    }
-
-    /**
-     * @param string $url
-     * @param array  $fields
-     *
-     * @return array
-     */
-    protected function makePostRequest(string $url, array $fields = [])
-    {
-        $result = $this->connection->post($url, [
-            'form_params' => $fields,
-        ]);
 
         return (array) json_decode($result->getBody()->getContents(), true);
     }
@@ -220,7 +137,7 @@ class Client
      *
      * @return bool
      */
-    protected function makeDeleteRequest(string $url)
+    protected function makeDeleteRequest($url)
     {
         $result = $this->connection->delete($url);
 
@@ -249,7 +166,7 @@ class Client
      *
      * @return string
      */
-    protected function makeUri(string $objectType, string $operation = null, array $attr = [])
+    protected function makeUri($objectType, $operation = null, array $attr = [])
     {
         $uri = "/{$objectType}/version/4";
 
