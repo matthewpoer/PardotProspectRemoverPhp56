@@ -10,7 +10,7 @@ workstation.
 
 ## Download and Setup
 ```bash
-git clone https://github.com/matthewpoer/PardotProspectRemoverPhp56.git .
+git clone https://github.com/matthewpoer/PardotProspectRemoverPhp56.git
 cd PardotProspectRemoverPhp56
 composer install
 ```
