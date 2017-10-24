@@ -34,6 +34,7 @@ $filename = 'to_be_deleted.csv';
 $prospect_ids = file($filename);
 
 $count = 0;
+echo 'Total number of prospects: ' . count($prospect_ids) . PHP_EOL;
 foreach($prospect_ids as $prospect_id) {
   $prospect_id = trim($prospect_id);
   echo 'The count is ' . $count . ' and the id is ' . $prospect_id . "\r";
@@ -47,7 +48,7 @@ foreach($prospect_ids as $prospect_id) {
 
   $count++;
 
-  if($count >= 1500) {
+  if($count % 1000 == 0) {
     echo 'The count is ' . $count . ' and the id is ' . $prospect_id . PHP_EOL;
     break;
   }
