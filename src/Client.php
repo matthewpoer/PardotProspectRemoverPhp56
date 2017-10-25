@@ -140,8 +140,14 @@ class Client
     protected function makeDeleteRequest($url)
     {
         $result = $this->connection->delete($url);
-
-        return $result->getStatusCode() == 204;
+        $code = $result->getStatusCode();
+        $reason = $result->getReasonPhrase();
+        if ($code == 204 || $code == 200) {
+            return TRUE;
+        }
+        var_dump($code);
+        var_dump($reason);
+        return FALSE;
     }
 
     /**
