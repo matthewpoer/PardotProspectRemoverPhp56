@@ -38,6 +38,21 @@ echo 'Total number of prospects: ' . count($prospect_ids) . PHP_EOL;
 foreach($prospect_ids as $prospect_id) {
   $prospect_id = trim($prospect_id);
   echo 'The count is ' . $count . ' and the id is ' . $prospect_id . "\r";
+
+  // update CRM fields to avoid sync after delete
+  $response = $client->update('Prospect', $prospect_id, array(
+    'crm_contact_fid' => '[[crm_ignore_prospect]]',
+    'crm_lead_fid' => '[[crm_ignore_prospect]]',
+    'crm_url' => '[[crm_ignore_prospect]]',
+  ), array(), TRUE);
+  if($response !== TRUE) {
+    echo 'The count is ' . $count . ' and the id is ' . $prospect_id . PHP_EOL;
+    echo 'Something amiss while running update on ID of ' . $prospect_id . PHP_EOL;
+    echo 'Maybe there\'s an error message? ' . print_r($response, TRUE) . PHP_EOL;
+    die();
+  }
+
+  // now do the delete
   $response = $client->delete('Prospect', $prospect_id);
   if($response !== TRUE) {
     echo 'The count is ' . $count . ' and the id is ' . $prospect_id . PHP_EOL;

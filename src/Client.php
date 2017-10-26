@@ -107,6 +107,24 @@ class Client
     /**
      * @param string $objectType
      * @param int    $id
+     * @param array  $payload
+     * @param array  $options
+     * @param bool  $success_only only return the success/failure of the call
+     *              (instead of the full propsect data)
+     *
+     * @return array
+     */
+    public function update($objectType, $id, $payload, array $options = [], $success_only = FALSE)
+    {
+        $options['id'] = $id;
+        return $this->makePostRequest(
+            $this->makeUri($objectType, 'update', $options),
+            $this->makeFields($payload), $success_only);
+    }
+
+    /**
+     * @param string $objectType
+     * @param int    $id
      * @param array  $options
      *
      * @return bool
@@ -129,6 +147,24 @@ class Client
     {
         $result = $this->connection->get($url);
 
+        return (array) json_decode($result->getBody()->getContents(), true);
+    }
+
+    /**
+     * @param string $url
+     * @param array  $fields
+     * @param bool  $success_only return Bool instead of full propsect data
+     *
+     * @return mixed array or bool depending on third param
+     */
+    protected function makePostRequest($url, array $fields = [], $success_only = FALSE)
+    {
+        $result = $this->connection->post($url, [
+            'form_params' => $fields,
+        ]);
+        if($success_only){
+          return ($result->getStatusCode() == 200);
+        }
         return (array) json_decode($result->getBody()->getContents(), true);
     }
 
